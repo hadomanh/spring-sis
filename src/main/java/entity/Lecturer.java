@@ -47,7 +47,7 @@ public class Lecturer {
 			name = "lecturer_article",
 			joinColumns = @JoinColumn(name = "lecturer_id")
 	)
-	private List<String> articles;
+	private List<Article> articles;
 	
 	public Lecturer() {
 		// TODO Auto-generated constructor stub
@@ -59,6 +59,15 @@ public class Lecturer {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.username = username;
+	}
+
+	public Lecturer(int id, String firstName, String lastName, String username, List<Article> articles) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.username = username;
+		this.articles = articles;
 	}
 
 	public int getId() {
@@ -109,11 +118,11 @@ public class Lecturer {
 		this.subjects = subjects;
 	}
 
-	public List<String> getArticles() {
+	public List<Article> getArticles() {
 		return articles;
 	}
 
-	public void setArticles(List<String> articles) {
+	public void setArticles(List<Article> articles) {
 		this.articles = articles;
 	}
 	

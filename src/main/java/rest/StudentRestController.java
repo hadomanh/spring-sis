@@ -1,5 +1,7 @@
 package rest;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import dto.StudentDTO;
 import entity.Student;
 import exception.NotFoundException;
 import exception.WrongSyntaxException;
+import service.AdapterService;
 import service.MainService;
 
 @RestController
@@ -21,9 +25,12 @@ public class StudentRestController {
 
 	@Autowired
 	private MainService<Student> studentService;
+	
+	@Autowired
+	private AdapterService<Student, StudentDTO> adapterService;
 
 	@GetMapping("/{id}")
-	public Student getStudent(@PathVariable String id) {
+	public StudentDTO getStudent(@PathVariable String id) {
 		
 		if(!id.matches("^[0-9]*$")) {
 			throw new WrongSyntaxException("Student ID contains alphabetic character - " + id);
@@ -34,17 +41,16 @@ public class StudentRestController {
 		if (result == null) {
 			throw new NotFoundException("Student ID not found - " + id);
 		}
-		
-		result.getSchool().setStudents(null);
-		result.getSchool().setLecturers(null);
-		result.setSubjects(null);
 
-		return result;
+		return adapterService.getJSON(result);
 	}
 
 	@GetMapping("/")
-	public String getAll() {
-		return studentService.getAll(Student.class).toString();
+	public List<StudentDTO> getAll() {
+		
+		List<Student> results = studentService.getAll(Student.class);
+		
+		return adapterService.getJSON(results);
 	}
 
 	@PostMapping("/")
