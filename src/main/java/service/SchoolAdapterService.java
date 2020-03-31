@@ -1,7 +1,6 @@
 package service;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -32,17 +31,6 @@ public class SchoolAdapterService implements AdapterService<School, SchoolDTO> {
 		destination.setStudents(modelMapper.map(source.getStudents(), listType));
 
 		return destination;
-	}
-
-	@Override
-	public List<SchoolDTO> getJSON(List<School> sourceList) {
-		List<SchoolDTO> result = new ArrayList<SchoolDTO>();
-		
-		for (int i = 0; i < sourceList.size(); i++) {
-			result.add(getJSON(sourceList.get(i)));
-		}
-		
-		return result;
 	}
 
 }
