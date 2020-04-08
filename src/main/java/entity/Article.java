@@ -3,6 +3,13 @@ package entity;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Embeddable
 public class Article {
 
@@ -11,31 +18,5 @@ public class Article {
 	
 	@Column(name = "title")
 	private String title;
-
-	public Article() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public Article(String id, String title) {
-		super();
-		this.id = id;
-		this.title = title;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
 
 }

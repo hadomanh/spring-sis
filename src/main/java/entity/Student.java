@@ -5,13 +5,18 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "student")
 public class Student {
@@ -29,7 +34,7 @@ public class Student {
 	@Column(name = "username")
 	private String username;
 	
-	@ManyToOne(cascade = {
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {
 			CascadeType.DETACH, 
 			CascadeType.MERGE, 
 			CascadeType.PERSIST,
@@ -40,10 +45,6 @@ public class Student {
 	
 	@ManyToMany(mappedBy = "students")
 	private List<Subject> subjects;
-	
-	public Student() {
-		// TODO Auto-generated constructor stub
-	}
 
 	public Student(String id, String firstName, String lastName, String username, School school) {
 		super();
@@ -54,66 +55,15 @@ public class Student {
 		this.school = school;
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
+	public Student(String firstName, String lastName, String username) {
+		super();
 		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
 		this.lastName = lastName;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
 		this.username = username;
 	}
-
-	public School getSchool() {
-		return school;
-	}
-
-	public void setSchool(School school) {
-		this.school = school;
-	}
-
-	public List<Subject> getSubjects() {
-		return subjects;
-	}
-
-	public void setSubjects(List<Subject> subjects) {
-		this.subjects = subjects;
-	}
-
-	@Override
-	public String toString() {
-		return "Student [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", username=" + username
-				+ ", school=" + school + "]";
-	}
-	
-	
-
 	
 	
 	
-	
-	
-
 }
+
+

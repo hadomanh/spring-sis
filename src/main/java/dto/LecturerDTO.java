@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class StudentDTO {
+public class LecturerDTO {
 	
 	private String id, firstName, lastName, username;
 	
@@ -15,7 +15,6 @@ public class StudentDTO {
 	@NoArgsConstructor
 	public static class School {
 		private String id, name;
-		
 	}
 
 }

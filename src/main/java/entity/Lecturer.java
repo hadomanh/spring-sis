@@ -7,19 +7,25 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "lecturer")
 public class Lecturer {
 	
 	@Id
 	@Column(name = "id")
-	private int id;
+	private String id;
 	
 	@Column(name = "first_name")
 	private String firstName;
@@ -30,7 +36,7 @@ public class Lecturer {
 	@Column(name = "username")
 	private String username;
 	
-	@ManyToOne(cascade = {
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {
 			CascadeType.DETACH, 
 			CascadeType.MERGE, 
 			CascadeType.PERSIST,
@@ -41,19 +47,16 @@ public class Lecturer {
 	
 	@ManyToMany(mappedBy = "lecturers")
 	private List<Subject> subjects;
+
 	
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name = "lecturer_article",
 			joinColumns = @JoinColumn(name = "lecturer_id")
 	)
 	private List<Article> articles;
-	
-	public Lecturer() {
-		// TODO Auto-generated constructor stub
-	}
 
-	public Lecturer(int id, String firstName, String lastName, String username) {
+	public Lecturer(String id, String firstName, String lastName, String username) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -61,7 +64,7 @@ public class Lecturer {
 		this.username = username;
 	}
 
-	public Lecturer(int id, String firstName, String lastName, String username, List<Article> articles) {
+	public Lecturer(String id, String firstName, String lastName, String username, List<Article> articles) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -69,65 +72,6 @@ public class Lecturer {
 		this.username = username;
 		this.articles = articles;
 	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public School getSchool() {
-		return school;
-	}
-
-	public void setSchool(School school) {
-		this.school = school;
-	}
-
-	public List<Subject> getSubjects() {
-		return subjects;
-	}
-
-	public void setSubjects(List<Subject> subjects) {
-		this.subjects = subjects;
-	}
-
-	public List<Article> getArticles() {
-		return articles;
-	}
-
-	public void setArticles(List<Article> articles) {
-		this.articles = articles;
-	}
-	
-	
-	
 	
 
 }
