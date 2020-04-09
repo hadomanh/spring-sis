@@ -1,6 +1,9 @@
 package rest;
 
+import java.lang.reflect.Field;
 import java.util.List;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import dto.StudentDTO;
+import entity.School;
 import entity.Student;
 import exception.NotFoundException;
 import exception.WrongSyntaxException;
@@ -21,18 +25,22 @@ import service.MainService;
 
 @RestController
 @RequestMapping("/student")
+@Transactional
 public class StudentRestController {
 
 	@Autowired
 	private MainService<Student> studentService;
-	
+
+	@Autowired
+	private MainService<School> schoolService;
+
 	@Autowired
 	private AdapterService<Student, StudentDTO> adapterService;
 
 	@GetMapping("/{id}")
-	public StudentDTO getStudent(@PathVariable String id) {
-		
-		if(!id.matches("^[0-9]*$")) {
+	public StudentDTO get(@PathVariable String id) {
+
+		if (!id.matches("^[0-9]*$")) {
 			throw new WrongSyntaxException("Student ID contains alphabetic character - " + id);
 		}
 
@@ -47,42 +55,73 @@ public class StudentRestController {
 
 	@GetMapping("/")
 	public List<StudentDTO> getAll() {
-		
+
 		List<Student> results = studentService.getAll(Student.class);
-		
+
 		return adapterService.getJSON(results);
 	}
 
-	@PostMapping("/")
-	public Student addStudent(@RequestBody Student newStudent) {
+	@PostMapping("/{schoolId}")
+	public StudentDTO add(@RequestBody Student newStudent, @PathVariable String schoolId) {
+
+		School school = schoolService.get(School.class, schoolId);
+
+		if (school == null)
+			throw new NotFoundException("School ID not found - " + schoolId);
+
+		newStudent.setSchool(school);
 
 		studentService.save(newStudent);
 
-		return newStudent;
+		return adapterService.getJSON(newStudent);
 	}
 
-	@PutMapping("/")
-	public Student updateStudent(@RequestBody Student newStudent) {
+	@PutMapping("/{id}/{schoolId}")
+	public StudentDTO update(@RequestBody Student newStudent, 
+								@PathVariable String id, 
+								@PathVariable String schoolId) {
+
+		Student toUpdate = studentService.get(Student.class, id);
+
+		if (toUpdate == null) {
+			throw new NotFoundException("Student ID not found - " + id);
+		}
+
+		School school = schoolService.get(School.class, schoolId);
+
+		if (school == null) {
+			throw new NotFoundException("School ID not found - " + schoolId);
+		}
+
+		for (Field field : newStudent.getClass().getDeclaredFields()) {
+			
+			try {
+				
+				field.setAccessible(true);
+				Object newValue = field.get(newStudent);
+				
+				if (newValue != null) {
+					field.set(toUpdate, newValue);
+				}
+			
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
 		
-		if(!newStudent.getId().matches("^[0-9]*$")) {
-			throw new WrongSyntaxException("Student ID contains alphabetic character - " + newStudent.getId());
-		}
+		toUpdate.setId(id);
 
-		Student result = studentService.get(Student.class, newStudent.getId());
+		toUpdate.setSchool(school);
 
-		if (result == null) {
-			throw new NotFoundException("Student ID not found - " + newStudent.getId());
-		}
+		studentService.save(toUpdate);
 
-		studentService.save(newStudent);
-
-		return newStudent;
+		return adapterService.getJSON(toUpdate);
 	}
 
 	@DeleteMapping("/{id}")
-	public String deleteStudent(@PathVariable String id) {
-		
-		if(!id.matches("^[0-9]*$")) {
+	public String delete(@PathVariable String id) {
+
+		if (!id.matches("^[0-9]*$")) {
 			throw new WrongSyntaxException("Student ID contains alphabetic character - " + id);
 		}
 

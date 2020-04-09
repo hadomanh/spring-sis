@@ -47,7 +47,6 @@ public class Lecturer {
 	
 	@ManyToMany(mappedBy = "lecturers")
 	private List<Subject> subjects;
-
 	
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(

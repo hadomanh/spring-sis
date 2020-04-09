@@ -1,6 +1,9 @@
 package rest;
 
+import java.lang.reflect.Field;
 import java.util.List;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +23,7 @@ import service.MainService;
 
 @RestController
 @RequestMapping("/school")
+@Transactional
 public class SchoolRestController {
 
 	@Autowired
@@ -34,7 +38,7 @@ public class SchoolRestController {
 	}
 	
 	@GetMapping("/{id}")
-	public SchoolDTO getSchool(@PathVariable String id) {
+	public SchoolDTO get(@PathVariable String id) {
 		
 		School result = schoolService.get(School.class, id);
 		
@@ -46,29 +50,47 @@ public class SchoolRestController {
 	}
 
 	@PostMapping("/")
-	public School addSchool(@RequestBody School newSchool) {
+	public School add(@RequestBody School newSchool) {
 		
 		schoolService.save(newSchool);
 		
 		return newSchool;
 	}
 
-	@PutMapping("/")
-	public School updateSchool(@RequestBody School newSchool) {
+	@PutMapping("/{id}")
+	public SchoolDTO update(@RequestBody School newSchool,
+							@PathVariable String id) {
 		
-		School result = schoolService.get(School.class, newSchool.getId());
+		School toUpdate = schoolService.get(School.class, id);
 		
-		if (result == null) {
+		if (toUpdate == null) {
 			throw new NotFoundException("School ID not found - " + newSchool.getId());
 		}
 		
-		schoolService.save(newSchool);
+		for (Field field : newSchool.getClass().getDeclaredFields()) {
+			
+			field.setAccessible(true);
+			
+			try {
+				Object newValue = field.get(newSchool);
+				
+				if (newValue != null) {
+					field.set(toUpdate, newValue);
+				}
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
 		
-		return newSchool;
+		toUpdate.setId(id);
+		
+		schoolService.save(toUpdate);
+		
+		return adapterService.getJSON(toUpdate);
 	}
 	
 	@DeleteMapping("/{id}")
-	public String deleteSchool(@PathVariable String id) {
+	public String delete(@PathVariable String id) {
 		
 		School result = schoolService.get(School.class, id);
 		
