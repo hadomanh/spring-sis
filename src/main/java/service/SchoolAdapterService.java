@@ -30,6 +30,12 @@ public class SchoolAdapterService implements AdapterService<School, SchoolDTO> {
 
 		destination.setStudents(modelMapper.map(source.getStudents(), listType));
 
+		listType = new TypeToken<List<dto.SchoolDTO.Lecturer>>() {
+			private static final long serialVersionUID = 1L;
+		}.getType();
+
+		destination.setStudents(modelMapper.map(source.getLecturers(), listType));
+
 		return destination;
 	}
 

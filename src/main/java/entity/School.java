@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -24,11 +26,25 @@ import lombok.ToString;
 public class School {
 	
 	@Id
-	@Column(name = "id")
+	@Column
 	private String id;
 	
-	@Column(name = "name")
+	@Column
 	private String name;
+	
+	@Embedded
+	private Address address;
+	
+	@Embeddable
+	@Data
+	@NoArgsConstructor
+	public static class Address {
+		@Column
+		private String building;
+		
+		@Column
+		private String room;
+	}
 	
 	@ToString.Exclude
 	@OneToMany(cascade = CascadeType.ALL, 
