@@ -47,7 +47,7 @@ public class LecturerRestController {
 		Lecturer result = mainService.get(Lecturer.class, id);
 		
 		if (result == null) {
-			throw new NotFoundException("Lecturer ID not found " + id);
+			throw new NotFoundException("Lecturer ID not found - " + id);
 		}
 		
 		return adapterService.getJSON(result);

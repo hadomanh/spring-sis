@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 public class Lecturer {
 	
 	@Id
-	@Column(name = "id")
+	@Column
 	private String id;
 	
 	@Column(name = "first_name")
@@ -33,7 +33,7 @@ public class Lecturer {
 	@Column(name = "last_name")
 	private String lastName;
 	
-	@Column(name = "username")
+	@Column
 	private String username;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = {
@@ -53,7 +53,8 @@ public class Lecturer {
 			name = "lecturer_article",
 			joinColumns = @JoinColumn(name = "lecturer_id")
 	)
-	private List<Article> articles;
+	@Column(name = "title")
+	private List<String> articles;
 
 	public Lecturer(String id, String firstName, String lastName, String username) {
 		super();
@@ -63,7 +64,7 @@ public class Lecturer {
 		this.username = username;
 	}
 
-	public Lecturer(String id, String firstName, String lastName, String username, List<Article> articles) {
+	public Lecturer(String id, String firstName, String lastName, String username, List<String> articles) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
