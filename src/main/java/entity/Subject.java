@@ -22,10 +22,10 @@ import lombok.NoArgsConstructor;
 public class Subject {
 	
 	@Id
-	@Column(name = "id")
+	@Column
 	private String id;
 	
-	@Column(name = "name")
+	@Column
 	private String name;
 	
 	@ManyToMany(fetch = FetchType.LAZY,

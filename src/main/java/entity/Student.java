@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class Student {
 	
 	@Id
-	@Column(name = "id")
+	@Column
 	private String id;
 	
 	@Column(name = "first_name")
@@ -31,7 +31,7 @@ public class Student {
 	@Column(name = "last_name")
 	private String lastName;
 	
-	@Column(name = "username")
+	@Column
 	private String username;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = {
