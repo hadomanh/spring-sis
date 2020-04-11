@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -45,7 +46,16 @@ public class Lecturer {
 	@JoinColumn(name = "school_id")
 	private School school;
 	
-	@ManyToMany(mappedBy = "lecturers")
+	@ManyToMany(fetch = FetchType.LAZY,
+			cascade = {CascadeType.DETACH, 
+					CascadeType.MERGE, 
+					CascadeType.PERSIST, 
+					CascadeType.REFRESH})
+	@JoinTable(
+			name = "subject_lecturer",
+			joinColumns = @JoinColumn(name = "lecturer_id"),
+			inverseJoinColumns = @JoinColumn(name = "subject_id")
+			)
 	private List<Subject> subjects;
 	
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -71,6 +81,14 @@ public class Lecturer {
 		this.lastName = lastName;
 		this.username = username;
 		this.articles = articles;
+	}
+	
+	public void addSubject(Subject newSubject) {
+		subjects.add(newSubject);
+	}
+	
+	public void removeSubject(Subject toRemove) {
+		subjects.remove(toRemove);
 	}
 	
 

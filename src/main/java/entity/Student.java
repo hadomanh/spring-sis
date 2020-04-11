@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -43,7 +44,16 @@ public class Student {
 	@JoinColumn(name = "school_id")
 	private School school;
 	
-	@ManyToMany(mappedBy = "students")
+	@ManyToMany(fetch = FetchType.LAZY,
+			cascade = {CascadeType.DETACH, 
+					CascadeType.MERGE, 
+					CascadeType.PERSIST, 
+					CascadeType.REFRESH})
+	@JoinTable(
+			name = "subject_student",
+			joinColumns = @JoinColumn(name = "student_id"),
+			inverseJoinColumns = @JoinColumn(name = "subject_id")
+			)
 	private List<Subject> subjects;
 
 	public Student(String id, String firstName, String lastName, String username, School school) {
@@ -60,6 +70,14 @@ public class Student {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.username = username;
+	}
+	
+	public void addSubject(Subject newSubject) {
+		subjects.add(newSubject);
+	}
+	
+	public void removeSubject(Subject toRemove) {
+		subjects.remove(toRemove);
 	}
 	
 	

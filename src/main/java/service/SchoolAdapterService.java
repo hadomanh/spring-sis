@@ -11,7 +11,9 @@ import com.google.common.annotations.Beta;
 import com.google.common.reflect.TypeToken;
 
 import dto.SchoolDTO;
+import entity.Lecturer;
 import entity.School;
+import entity.Student;
 
 @Service
 @Beta
@@ -27,14 +29,22 @@ public class SchoolAdapterService implements AdapterService<School, SchoolDTO> {
 		Type listType = new TypeToken<List<dto.SchoolDTO.Student>>() {
 			private static final long serialVersionUID = 1L;
 		}.getType();
-
-		destination.setStudents(modelMapper.map(source.getStudents(), listType));
+		
+		List<Student> students = source.getStudents();
+		
+		if (students != null) {
+			destination.setStudents(modelMapper.map(students, listType));
+		}
 
 		listType = new TypeToken<List<dto.SchoolDTO.Lecturer>>() {
 			private static final long serialVersionUID = 1L;
 		}.getType();
-
-		destination.setStudents(modelMapper.map(source.getLecturers(), listType));
+		
+		List<Lecturer> lecturers = source.getLecturers();
+		
+		if (lecturers != null) {
+			destination.setLecturers(modelMapper.map(lecturers, listType));
+		}
 
 		return destination;
 	}

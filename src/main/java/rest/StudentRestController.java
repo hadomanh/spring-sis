@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import dto.StudentDTO;
 import entity.School;
 import entity.Student;
+import entity.Subject;
 import exception.NotFoundException;
 import exception.WrongSyntaxException;
 import service.AdapterService;
@@ -29,10 +30,13 @@ import service.MainService;
 public class StudentRestController {
 
 	@Autowired
-	private MainService<Student> studentService;
-
+	private MainService<Student> mainService;
+	
 	@Autowired
 	private MainService<School> schoolService;
+
+	@Autowired
+	private MainService<Subject> subjectService;
 
 	@Autowired
 	private AdapterService<Student, StudentDTO> adapterService;
@@ -44,7 +48,7 @@ public class StudentRestController {
 			throw new WrongSyntaxException("Student ID contains alphabetic character - " + id);
 		}
 
-		Student result = studentService.get(Student.class, id);
+		Student result = mainService.get(Student.class, id);
 
 		if (result == null) {
 			throw new NotFoundException("Student ID not found - " + id);
@@ -56,7 +60,7 @@ public class StudentRestController {
 	@GetMapping("/")
 	public List<StudentDTO> getAll() {
 
-		List<Student> results = studentService.getAll(Student.class);
+		List<Student> results = mainService.getAll(Student.class);
 
 		return adapterService.getJSON(results);
 	}
@@ -71,26 +75,19 @@ public class StudentRestController {
 
 		newStudent.setSchool(school);
 
-		studentService.save(newStudent);
+		mainService.save(newStudent);
 
 		return adapterService.getJSON(newStudent);
 	}
 
-	@PutMapping("/{id}/{schoolId}")
+	@PutMapping("/{id}")
 	public StudentDTO update(@RequestBody Student newStudent, 
-								@PathVariable String id, 
-								@PathVariable String schoolId) {
+								@PathVariable String id) {
 
-		Student toUpdate = studentService.get(Student.class, id);
+		Student toUpdate = mainService.get(Student.class, id);
 
 		if (toUpdate == null) {
 			throw new NotFoundException("Student ID not found - " + id);
-		}
-
-		School school = schoolService.get(School.class, schoolId);
-
-		if (school == null) {
-			throw new NotFoundException("School ID not found - " + schoolId);
 		}
 
 		for (Field field : newStudent.getClass().getDeclaredFields()) {
@@ -111,9 +108,30 @@ public class StudentRestController {
 		
 		toUpdate.setId(id);
 
-		toUpdate.setSchool(school);
+		mainService.save(toUpdate);
 
-		studentService.save(toUpdate);
+		return adapterService.getJSON(toUpdate);
+	}
+
+	@PutMapping("/{id}/{subjectId}")
+	public StudentDTO update(@PathVariable String id, 
+								@PathVariable String subjectId) {
+
+		Student toUpdate = mainService.get(Student.class, id);
+
+		if (toUpdate == null) {
+			throw new NotFoundException("Student ID not found - " + id);
+		}
+		
+		Subject newSubject = subjectService.get(Subject.class, subjectId);
+		
+		if (newSubject == null) {
+			throw new NotFoundException("Subject ID not found - " + subjectId);
+		}
+
+		toUpdate.addSubject(newSubject);
+
+		mainService.save(toUpdate);
 
 		return adapterService.getJSON(toUpdate);
 	}
@@ -125,15 +143,38 @@ public class StudentRestController {
 			throw new WrongSyntaxException("Student ID contains alphabetic character - " + id);
 		}
 
-		Student result = studentService.get(Student.class, id);
+		Student toRemove = mainService.get(Student.class, id);
 
-		if (result == null) {
+		if (toRemove == null) {
 			throw new NotFoundException("Student ID not found - " + id);
 		}
 
-		studentService.delete(Student.class, id);
+		mainService.delete(Student.class, id);
 
 		return "Deleted student ID - " + id;
+	}
+	
+	@DeleteMapping("/{id}/{subjectId}")
+	public StudentDTO delete(@PathVariable String id, 
+								@PathVariable String subjectId) {
+		
+		Student toUpdate = mainService.get(Student.class, id);
+		
+		if (toUpdate == null) {
+			throw new NotFoundException("Student ID not found - " + id);
+		}
+		
+		Subject toRemove = subjectService.get(Subject.class, subjectId);
+		
+		if (toRemove == null) {
+			throw new NotFoundException("Subject ID not found - " + subjectId);
+		}
+		
+		toUpdate.removeSubject(toRemove);
+		
+		mainService.save(toUpdate);
+		
+		return adapterService.getJSON(toUpdate);
 	}
 
 }

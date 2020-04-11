@@ -13,11 +13,19 @@ public class LecturerDTO {
 	
 	private School school;
 	
+	private List<Subject> subjects;
+	
 	private List<String> articles;
 
 	@Data
 	@NoArgsConstructor
 	public static class School {
+		private String id, name;
+	}
+	
+	@Data
+	@NoArgsConstructor
+	public static class Subject {
 		private String id, name;
 	}
 

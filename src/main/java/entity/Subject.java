@@ -2,13 +2,9 @@ package entity;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
@@ -28,28 +24,10 @@ public class Subject {
 	@Column
 	private String name;
 	
-	@ManyToMany(fetch = FetchType.LAZY,
-			cascade = {CascadeType.DETACH, 
-					CascadeType.MERGE, 
-					CascadeType.PERSIST, 
-					CascadeType.REFRESH})
-	@JoinTable(
-			name = "subject_student",
-			joinColumns = @JoinColumn(name = "subject_id"),
-			inverseJoinColumns = @JoinColumn(name = "student_id")
-			)
+	@ManyToMany(mappedBy = "subjects")
 	private List<Student> students;
 	
-	@ManyToMany(fetch = FetchType.LAZY,
-			cascade = {CascadeType.DETACH, 
-					CascadeType.MERGE, 
-					CascadeType.PERSIST, 
-					CascadeType.REFRESH})
-	@JoinTable(
-			name = "subject_lecturer",
-			joinColumns = @JoinColumn(name = "subject_id"),
-			inverseJoinColumns = @JoinColumn(name = "lecturer_id")
-			)
+	@ManyToMany(mappedBy = "subjects")
 	private List<Lecturer> lecturers;
 
 	public Subject(String id, String name) {

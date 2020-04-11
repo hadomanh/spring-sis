@@ -15,65 +15,60 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import dto.SchoolDTO;
-import entity.School;
+import dto.SubjectDTO;
+import entity.Subject;
 import exception.NotFoundException;
 import service.AdapterService;
 import service.MainService;
 
 @RestController
-@RequestMapping("/school")
+@RequestMapping("/subject")
 @Transactional
-public class SchoolRestController {
-
-	@Autowired
-	private MainService<School> mainService;
+public class SubjectRestController {
 	
 	@Autowired
-	private AdapterService<School, SchoolDTO> adapterService;
+	private MainService<Subject> mainService;
 	
-	@GetMapping("/")
-	public List<SchoolDTO> getAll() {
-		return adapterService.getJSON(mainService.getAll(School.class));
-	}
+	@Autowired
+	private AdapterService<Subject, SubjectDTO> adapterService;
 	
 	@GetMapping("/{id}")
-	public SchoolDTO get(@PathVariable String id) {
-		
-		School result = mainService.get(School.class, id);
-		
-		if (result == null) {
-			throw new NotFoundException("School ID not found - " + id);
+	public SubjectDTO get(@PathVariable String id) {
+		Subject subject = mainService.get(Subject.class, id);
+		if (subject == null) {
+			throw new NotFoundException("Subject ID not found - " + id);
 		}
 		
-		return adapterService.getJSON(result);
+		return adapterService.getJSON(subject);
 	}
-
+	
+	@GetMapping("/")
+	public List<SubjectDTO> getAll() {
+		return adapterService.getJSON(mainService.getAll(Subject.class));
+	}
+	
 	@PostMapping("/")
-	public SchoolDTO add(@RequestBody School newSchool) {
+	public SubjectDTO add(@RequestBody Subject newSubject) {
 		
-		mainService.save(newSchool);
+		mainService.save(newSubject);
 		
-		return adapterService.getJSON(newSchool);
+		return adapterService.getJSON(newSubject);
 	}
-
+	
 	@PutMapping("/{id}")
-	public SchoolDTO update(@RequestBody School newSchool,
-							@PathVariable String id) {
+	public SubjectDTO update(@PathVariable String id, 
+								@RequestBody Subject newSubject) {
 		
-		School toUpdate = mainService.get(School.class, id);
+		Subject toUpdate = mainService.get(Subject.class, id);
 		
 		if (toUpdate == null) {
-			throw new NotFoundException("School ID not found - " + newSchool.getId());
+			throw new NotFoundException("Subject ID not found - " + id);
 		}
 		
-		for (Field field : newSchool.getClass().getDeclaredFields()) {
-			
+		for (Field field : newSubject.getClass().getDeclaredFields()) {
 			field.setAccessible(true);
-			
 			try {
-				Object newValue = field.get(newSchool);
-				
+				Object newValue = field.get(newSubject);
 				if (newValue != null) {
 					field.set(toUpdate, newValue);
 				}
@@ -83,7 +78,6 @@ public class SchoolRestController {
 		}
 		
 		toUpdate.setId(id);
-		
 		mainService.save(toUpdate);
 		
 		return adapterService.getJSON(toUpdate);
@@ -92,17 +86,14 @@ public class SchoolRestController {
 	@DeleteMapping("/{id}")
 	public String delete(@PathVariable String id) {
 		
-		School result = mainService.get(School.class, id);
+		Subject toDelete = mainService.get(Subject.class, id);
 		
-		if (result == null) {
-			throw new NotFoundException("School ID not found - " + id);
+		if (toDelete == null) {
+			throw new NotFoundException("Subject ID not found - " + id);
 		}
+		mainService.delete(Subject.class, id);
 		
-		mainService.delete(School.class, id);
-		
-		return "Deleted school ID - " + id;
+		return "Deleted subject ID - " + id;
 	}
-	
-	
 
 }
