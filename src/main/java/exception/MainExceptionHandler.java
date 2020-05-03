@@ -28,7 +28,19 @@ public class MainExceptionHandler {
 												exception.getMessage(), 
 												System.currentTimeMillis());
 		
-		return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNPROCESSABLE_ENTITY);
+		
+	}
+	
+	// entity already exists
+	@ExceptionHandler
+	public ResponseEntity<ErrorResponse> handleException(EntityExistsException exception){
+		
+		ErrorResponse error = new ErrorResponse(HttpStatus.CONFLICT.value(),
+												exception.getMessage(), 
+												System.currentTimeMillis());
+		
+		return new ResponseEntity<ErrorResponse>(error, HttpStatus.CONFLICT);
 		
 	}
 	
