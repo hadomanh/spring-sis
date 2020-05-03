@@ -60,4 +60,20 @@ public class School {
 	@Fetch(value = FetchMode.SUBSELECT)
 	private List<Lecturer> lecturers;
 	
+	public void addStudent(Student toAdd) {
+		students.add(toAdd);
+	}
+	
+	public void removeStudent(Student toRemove) {
+		students.remove(toRemove);
+	}
+	
+	public void addLecturer(Lecturer toAdd) {
+		lecturers.add(toAdd);
+	}
+	
+	public void removeLecturer(Lecturer toRemove) {
+		lecturers.remove(toRemove);
+	}
+	
 }

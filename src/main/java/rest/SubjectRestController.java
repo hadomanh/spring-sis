@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import dto.SubjectDTO;
 import entity.Subject;
+import exception.EntityExistsException;
 import exception.NotFoundException;
 import service.AdapterService;
 import service.MainService;
@@ -48,11 +49,17 @@ public class SubjectRestController {
 	}
 	
 	@PostMapping("/")
-	public SubjectDTO add(@RequestBody Subject newSubject) {
+	public SubjectDTO add(@RequestBody Subject toAdd) {
 		
-		mainService.save(newSubject);
+		Subject toCheck = mainService.get(Subject.class, toAdd.getId());
 		
-		return adapterService.getJSON(newSubject);
+		if (toCheck != null) {
+			throw new EntityExistsException("Subject ID exists - " + toAdd.getId());
+		}
+		
+		mainService.save(toAdd);
+		
+		return adapterService.getJSON(toAdd);
 	}
 	
 	@PutMapping("/{id}")

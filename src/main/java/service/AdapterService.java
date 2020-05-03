@@ -3,6 +3,7 @@ package service;
 import java.util.ArrayList;
 import java.util.List;
 
+@FunctionalInterface
 public interface AdapterService<S, D> {
 
 	D getJSON(S source);

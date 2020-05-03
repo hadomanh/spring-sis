@@ -55,22 +55,6 @@ public class Student {
 			inverseJoinColumns = @JoinColumn(name = "subject_id")
 			)
 	private List<Subject> subjects;
-
-	public Student(String id, String firstName, String lastName, String username, School school) {
-		super();
-		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.username = username;
-		this.school = school;
-	}
-
-	public Student(String firstName, String lastName, String username) {
-		super();
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.username = username;
-	}
 	
 	public void addSubject(Subject newSubject) {
 		subjects.add(newSubject);

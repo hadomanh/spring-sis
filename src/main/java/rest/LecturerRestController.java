@@ -19,6 +19,7 @@ import dto.LecturerDTO;
 import entity.Lecturer;
 import entity.School;
 import entity.Subject;
+import exception.EntityExistsException;
 import exception.NotFoundException;
 import exception.WrongSyntaxException;
 import service.AdapterService;
@@ -63,16 +64,22 @@ public class LecturerRestController {
 	}
 
 	@PostMapping("/{schoolId}")
-	public LecturerDTO add(@RequestBody Lecturer lecturer,
+	public LecturerDTO add(@RequestBody Lecturer toAdd,
 							@PathVariable String schoolId) {
 		School school = schoolService.get(School.class, schoolId);
 
 		if (school == null)
 			throw new NotFoundException("School ID not found - " + schoolId);
+		
+		Lecturer toCheck = mainService.get(Lecturer.class, toAdd.getId());
+		
+		if (toCheck != null) {
+			throw new EntityExistsException("Lecturer ID exists - " + toAdd.getId());
+		}
 
-		lecturer.setSchool(school);
-		mainService.save(lecturer);
-		return adapterService.getJSON(lecturer);
+		toAdd.setSchool(school);
+		mainService.save(toAdd);
+		return adapterService.getJSON(toAdd);
 	}
 
 	@PutMapping("/{id}")
